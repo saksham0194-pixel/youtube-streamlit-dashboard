@@ -8,6 +8,7 @@ st.set_page_config(page_title="Global YouTube Statistics Dashboard", layout="wid
 # Load dataset
 df = pd.read_csv("Global YouTube Statistics (1).csv", encoding="latin1")
 
+st.write(df.columns)
 
 # Title
 st.title("📊 Global YouTube Statistics Dashboard")
