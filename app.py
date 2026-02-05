@@ -1,77 +1,40 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Page setup
-st.set_page_config(page_title="Global YouTube Statistics Dashboard", layout="wide")
+st.set_page_config(
+    page_title="Global YouTube Statistics Dashboard",
+    layout="wide"
+)
 
 # Load dataset
 df = pd.read_csv("Global YouTube Statistics (1).csv", encoding="latin1")
 
-# Normalize column names (VERY IMPORTANT)
+# Normalize column names
 df.columns = df.columns.str.strip().str.lower()
 
-# Title
+# Title & intro
 st.title("📊 Global YouTube Statistics Dashboard")
-
-st.write(
-    "This dashboard explores global YouTube channel statistics "
-    "to understand patterns in subscribers, views, and content categories."
+st.markdown(
+    """
+    This interactive dashboard analyzes global YouTube channel data to uncover
+    patterns in subscriber growth, viewership, content categories, and geographic distribution.
+    """
 )
 
 # Sidebar filters
-st.sidebar.header("Filters")
+st.sidebar.header("🔎 Filters")
 
 country_filter = st.sidebar.multiselect(
     "Select Country",
-    df["country"].dropna().unique(),
-    default=df["country"].dropna().unique()
+    sorted(df["country"].dropna().unique()),
+    default=sorted(df["country"].dropna().unique())
 )
 
 category_filter = st.sidebar.multiselect(
     "Select Category",
-    df["category"].dropna().unique(),
-    default=df["category"].dropna().unique()
+    sorted(df["category"].dropna().unique()),
+    default=sorted(df["category"].dropna().unique())
 )
-
-filtered_df = df[
-    (df["country"].isin(country_filter)) &
-    (df["category"].isin(category_filter))
-]
-
-# KPIs
-col1, col2, col3 = st.columns(3)
-col1.metric("Total Channels", filtered_df.shape[0])
-col2.metric("Average Subscribers", int(filtered_df["subscribers"].mean()))
-col3.metric("Average Views", int(filtered_df["video views"].mean()))
-
-st.divider()
-
-# Top channels
-st.subheader("Top 10 Channels by Subscribers")
-top_channels = filtered_df.sort_values("subscribers", ascending=False).head(10)
-
-fig1, ax1 = plt.subplots()
-ax1.barh(top_channels["youtuber"], top_channels["subscribers"])
-ax1.invert_yaxis()
-ax1.set_xlabel("Subscribers")
-ax1.set_ylabel("Channel")
-st.pyplot(fig1)
-
-# Subscribers vs Views
-st.subheader("Subscribers vs Views")
-fig2, ax2 = plt.subplots()
-ax2.scatter(filtered_df["subscribers"], filtered_df["video views"])
-ax2.set_xlabel("Subscribers")
-ax2.set_ylabel("Views")
-st.pyplot(fig2)
-
-# Category distribution
-st.subheader("Channels by Category")
-cat_count = filtered_df["category"].value_counts()
-
-fig3, ax3 = plt.subplots()
-cat_count.plot(kind="bar", ax=ax3)
-ax3.set_xlabel("Category")
-ax3.set_ylabel("Number of Channels")
-st.pyplot(fig3)
