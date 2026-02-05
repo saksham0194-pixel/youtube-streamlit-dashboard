@@ -8,8 +8,6 @@ st.set_page_config(page_title="Global YouTube Statistics Dashboard", layout="wid
 # Load dataset
 df = pd.read_csv("Global YouTube Statistics (1).csv", encoding="latin1")
 
-st.write(df.columns)
-
 # Title
 st.title("📊 Global YouTube Statistics Dashboard")
 
@@ -29,29 +27,29 @@ country_filter = st.sidebar.multiselect(
 
 category_filter = st.sidebar.multiselect(
     "Select Category",
-    df["Category"].dropna().unique(),
-    default=df["Category"].dropna().unique()
+    df["category"].dropna().unique(),
+    default=df["category"].dropna().unique()
 )
 
 filtered_df = df[
     (df["Country"].isin(country_filter)) &
-    (df["Category"].isin(category_filter))
+    (df["category"].isin(category_filter))
 ]
 
 # KPIs
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Channels", filtered_df.shape[0])
-col2.metric("Average Subscribers", int(filtered_df["Subscribers"].mean()))
-col3.metric("Average Views", int(filtered_df["Views"].mean()))
+col2.metric("Average Subscribers", int(filtered_df["subscribers"].mean()))
+col3.metric("Average Views", int(filtered_df["video views"].mean()))
 
 st.divider()
 
 # Top channels
 st.subheader("Top 10 Channels by Subscribers")
-top_channels = filtered_df.sort_values("Subscribers", ascending=False).head(10)
+top_channels = filtered_df.sort_values("subscribers", ascending=False).head(10)
 
 fig1, ax1 = plt.subplots()
-ax1.barh(top_channels["Youtuber"], top_channels["Subscribers"])
+ax1.barh(top_channels["Youtuber"], top_channels["subscribers"])
 ax1.invert_yaxis()
 ax1.set_xlabel("Subscribers")
 ax1.set_ylabel("Channel")
@@ -60,14 +58,14 @@ st.pyplot(fig1)
 # Subscribers vs Views
 st.subheader("Subscribers vs Views")
 fig2, ax2 = plt.subplots()
-ax2.scatter(filtered_df["Subscribers"], filtered_df["Views"])
+ax2.scatter(filtered_df["subscribers"], filtered_df["video views"])
 ax2.set_xlabel("Subscribers")
 ax2.set_ylabel("Views")
 st.pyplot(fig2)
 
 # Category distribution
 st.subheader("Channels by Category")
-cat_count = filtered_df["Category"].value_counts()
+cat_count = filtered_df["category"].value_counts()
 
 fig3, ax3 = plt.subplots()
 cat_count.plot(kind="bar", ax=ax3)
