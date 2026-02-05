@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="Global YouTube Statistics Dashboard", layout="wide")
 
 # Load dataset
-df = pd.read_csv("Global YouTube Statistics (1).csv")
+df = pd.read_csv("Global YouTube Statistics (1).csv", encoding="latin1")
+
 
 # Title
 st.title("📊 Global YouTube Statistics Dashboard")
