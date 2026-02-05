@@ -8,6 +8,9 @@ st.set_page_config(page_title="Global YouTube Statistics Dashboard", layout="wid
 # Load dataset
 df = pd.read_csv("Global YouTube Statistics (1).csv", encoding="latin1")
 
+# Normalize column names (VERY IMPORTANT)
+df.columns = df.columns.str.strip().str.lower()
+
 # Title
 st.title("📊 Global YouTube Statistics Dashboard")
 
@@ -21,8 +24,8 @@ st.sidebar.header("Filters")
 
 country_filter = st.sidebar.multiselect(
     "Select Country",
-    df["Country"].dropna().unique(),
-    default=df["Country"].dropna().unique()
+    df["country"].dropna().unique(),
+    default=df["country"].dropna().unique()
 )
 
 category_filter = st.sidebar.multiselect(
@@ -32,7 +35,7 @@ category_filter = st.sidebar.multiselect(
 )
 
 filtered_df = df[
-    (df["Country"].isin(country_filter)) &
+    (df["country"].isin(country_filter)) &
     (df["category"].isin(category_filter))
 ]
 
@@ -49,7 +52,7 @@ st.subheader("Top 10 Channels by Subscribers")
 top_channels = filtered_df.sort_values("subscribers", ascending=False).head(10)
 
 fig1, ax1 = plt.subplots()
-ax1.barh(top_channels["Youtuber"], top_channels["subscribers"])
+ax1.barh(top_channels["youtuber"], top_channels["subscribers"])
 ax1.invert_yaxis()
 ax1.set_xlabel("Subscribers")
 ax1.set_ylabel("Channel")
@@ -72,13 +75,3 @@ cat_count.plot(kind="bar", ax=ax3)
 ax3.set_xlabel("Category")
 ax3.set_ylabel("Number of Channels")
 st.pyplot(fig3)
-
-# Country distribution
-st.subheader("Top Countries by Number of Channels")
-country_count = filtered_df["Country"].value_counts().head(10)
-
-fig4, ax4 = plt.subplots()
-country_count.plot(kind="bar", ax=ax4)
-ax4.set_xlabel("Country")
-ax4.set_ylabel("Number of Channels")
-st.pyplot(fig4)
